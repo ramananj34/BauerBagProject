@@ -1,0 +1,1 @@
+This project is named after Jack Bauer, a character from the TV Series 24. It contains all of the important Algorithms that a competitive coder needs. 
