@@ -1,4 +1,4 @@
-//This class contains all of the sort methods
+//This class contains all of the Search methods
 
 package BauerBag;
 
