@@ -170,15 +170,17 @@ public final class BBagSearch
         partitions = Math.max(Math.min(partitions, endIndex-startIndex), 2); //Make the partitions between 2 and the length of the array
         
         int interval = (endIndex-startIndex)/partitions; //Sets the size of the partitions
+
+        if (arr[startIndex] == target) {return startIndex;} //Checks the lower boundry of the first partition so we can neglect it in the loop
+
         for (int i = 1; i <= partitions; i++) { //For each partition
 
-            if (arr[startIndex] == target) {return startIndex;} //Makes sure the value is not the first one
-            int temp = startIndex + interval*i; //Set the value you are checking to the partition
+            int temp = startIndex + interval*i; //Set the value you are checking to the next partition
             if (i==partitions) { temp = endIndex; } //To solve rounding problems, if you are at the end, use that index
 
             if (target==arr[temp]) {return temp;} //If the partition is the value return it
-            else if (target < arr[temp]) { //If you are in the partition
-                return polynomialJudeSearch(arr, target, partitions, startIndex + 1 + (interval*(i-1)), temp-1); //Partition that partition
+            else if (target < arr[temp]) { //If the target is in the partition, then go into it
+                return polynomialJudeSearch(arr, target, partitions, startIndex + 1 + (interval*(i-1)), temp-1); //Partition that partition recursivley
             }
         }
         return -1; //If you did not find it, return -1
