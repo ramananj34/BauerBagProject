@@ -16,7 +16,7 @@ public final class BBagSearch
      */
     public static int sequentialSearch(int[] arr, int target, int startIndex, int endIndex)
     {
-        for (int i = startIndex; (i <=endIndex && i<arr.length); i++) { //For each index in the range (going forward)
+        for (int i = startIndex; i <=endIndex; i++) { //For each index in the range (going forward)
             if (arr[i]==target) { return i; } //If the value at that index is the target, return that index
         }
         return -1; //If you didn't find the target, return -1
@@ -34,7 +34,7 @@ public final class BBagSearch
      */
     public static int reverseSequentialSearch(int[] arr, int target, int startIndex, int endIndex)
     {
-        for (int i = endIndex; (i >= 0 && i>=startIndex); i--) { //For each index in the range (going backward)
+        for (int i = endIndex; i>=startIndex; i--) { //For each index in the range (going backward)
             if (arr[i]==target) { return i; } //If the value at that index is the target, return that index
         }
         return -1; //If you didn't find the target, return -1
@@ -52,7 +52,7 @@ public final class BBagSearch
      */
     public static int recursiveSequentialSearch(int[] arr, int target, int startIndex, int endIndex)
     {
-        if(startIndex>endIndex || startIndex>=arr.length) { //If the index you are currently searching exceeded the end of the range, it means you did not find the target
+        if(startIndex>endIndex) { //If the index you are currently searching exceeded the end of the range, it means you did not find the target
             return -1; //You did not find the target, so return -1
         } else if(arr[startIndex]==target) { //If the index you are on is the target
             return startIndex; //Return that index
@@ -73,7 +73,7 @@ public final class BBagSearch
      */
     public static int recursiveReverseSequentialSearch(int[] arr, int target, int startIndex, int endIndex)
     {
-        if(endIndex<startIndex || endIndex<0) { //If the index you are currently searching exceeded the end of the range, it means you did not find the target
+        if(endIndex<startIndex) { //If the index you are currently searching exceeded the end of the range, it means you did not find the target
             return -1; //You did not find the target, so return -1
         } else if(arr[endIndex]==target) { //If the index you are on is the target
             return endIndex; //Return that index
@@ -137,7 +137,6 @@ public final class BBagSearch
      */
     public static int discreteJudeSearch(int[] arr, int target, int step, int startIndex, int endIndex) 
     {
-        endIndex = Math.min(endIndex,arr.length-1); //Id the user defined end index exceeds the array, make the end index the last index of the array
         step = Math.max(Math.min(step,2+(endIndex-startIndex)),1); //Make sure the step value is between 1 and the length of the array
 
         do {
@@ -166,7 +165,6 @@ public final class BBagSearch
      */
     public static int polynomialJudeSearch(int[] arr, int target, int partitions, int startIndex, int endIndex)
     {
-        endIndex = Math.min(endIndex,arr.length-1); //If the user defined end index excedes the length of the array, make the end index the length of the array
         partitions = Math.max(Math.min(partitions, endIndex-startIndex), 2); //Make the partitions between 2 and the length of the array
         
         int interval = (endIndex-startIndex)/partitions; //Sets the size of the partitions

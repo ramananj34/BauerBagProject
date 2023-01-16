@@ -2,6 +2,9 @@
 
 package BauerBag;
 
+import java.util.Random; //Necessary for shuffle method in Bogo Sort
+import java.util.Arrays;
+
 public final class BBagSort
 {
 
@@ -15,7 +18,7 @@ public final class BBagSort
      */
     public static void selectionSort(int[] arr, int startIndex, int endIndex)
     {
-        for (int i = startIndex; i < arr.length && i <= endIndex; i++) {
+        for (int i = startIndex; i <= endIndex; i++) {
             int minIndex = i;
             for (int j = i+1; j < arr.length && j <= endIndex; j++) {
                 if (arr[j] < arr[minIndex]) { minIndex = j; }
@@ -34,7 +37,7 @@ public final class BBagSort
      */
     public static void reverseSelectionSort(int[] arr, int startIndex, int endIndex)
     {
-        for (int i = endIndex; i >= 0 && i >=startIndex; i--) {
+        for (int i = endIndex; i >=startIndex; i--) {
             int maxIndex = i;
             for (int j = i-1; j >=0 && j >=startIndex; j--) {
                 if (arr[j] > arr[maxIndex]) { maxIndex = j; }
@@ -56,7 +59,7 @@ public final class BBagSort
         boolean swap;
         do {
             swap = false;
-            for (int i = startIndex; i < endIndex && i < arr.length-1; i++) {
+            for (int i = startIndex; i < endIndex; i++) {
                 if (arr[i] > arr[i+1]) {swap = true; Helpers.swap(arr, i, i+1);}
             }
         } while (swap);
@@ -75,7 +78,7 @@ public final class BBagSort
         boolean swap;
         do {
             swap = false;
-            for (int i = endIndex; i > 0 && i > startIndex; i--) {
+            for (int i = endIndex; i > startIndex; i--) {
                 if (arr[i] < arr[i-1]) {swap = true; Helpers.swap(arr, i, i-1);}
             }
         } while (swap);
@@ -91,9 +94,9 @@ public final class BBagSort
      */
     public static void insertionSort(int[] arr, int startIndex, int endIndex) 
     {
-        for (int i = startIndex+1; i < arr.length && i <= endIndex; i++) {
+        for (int i = startIndex+1; i <= endIndex; i++) {
             int spot = i;
-            while (spot > 0 && arr[spot] < arr[spot-1]) {Helpers.swap(arr, spot-1, spot); spot--;}
+            while (spot > startIndex && arr[spot] < arr[spot-1]) {Helpers.swap(arr, spot-1, spot); spot--;}
         }
     }
 
@@ -107,9 +110,9 @@ public final class BBagSort
      */
     public static void reverseInsertionSort(int[] arr, int startIndex, int endIndex) 
     {
-        for (int i = endIndex-1; i >= 0 && i >= startIndex; i--) {
+        for (int i = endIndex-1; i >= startIndex; i--) {
             int spot = i;
-            while (spot < endIndex && spot < arr.length-1 && arr[spot] > arr[spot+1]) {Helpers.swap(arr, spot+1, spot); spot++;}
+            while (spot < endIndex && arr[spot] > arr[spot+1]) {Helpers.swap(arr, spot+1, spot); spot++;}
         }
     }
 
@@ -123,7 +126,7 @@ public final class BBagSort
      */
     public static void mergeSort(int[] arr, int startIndex, int endIndex) 
     {
-        int[] tempArr = new int[arr.length]; //To perform this, we need a temporary array so we don't overide data. You will see why
+        int[] tempArr = new int[endIndex-startIndex+1]; //To perform this, we need a temporary array so we don't overide data. You will see why
         breakDown(arr,startIndex,endIndex,tempArr); //The first step is to break down the array. The recombination occurs recursivly
     }
 
@@ -148,19 +151,113 @@ public final class BBagSort
 
         for (int i = startIndex; i <= endIndex; i++) { //For each value we are recombining
             if (firstHalfIndex>middle) //If the first half index passes the middle, we know it goes in the second half
-				tempArr[i] = arr[secondHalfIndex++]; //Put the value in the second half and move up that index
+				tempArr[i-startIndex] = arr[secondHalfIndex++]; //Put the value in the second half and move up that index
 			else if (secondHalfIndex > endIndex) //If the second half index passes the range, take the first half index
-				tempArr[i] = arr[firstHalfIndex++]; //Puts the value in the first half and moves on
+				tempArr[i-startIndex] = arr[firstHalfIndex++]; //Puts the value in the first half and moves on
 			else if (arr[firstHalfIndex] < arr[secondHalfIndex]) //If the value of the first half index is less than the second half, take the value from the first half
-				tempArr[i] = arr[firstHalfIndex++]; //Does above
+				tempArr[i-startIndex] = arr[firstHalfIndex++]; //Does above
 			else //If all else fails, use the second half index
-				tempArr[i] = arr[secondHalfIndex++]; //Uses the second half index
+				tempArr[i-startIndex] = arr[secondHalfIndex++]; //Uses the second half index
         }
 
         for (int i = startIndex; i <= endIndex; i++) { //Copy the values from the temp array back to the origional
-			arr[i] = tempArr[i];
+			arr[i] = tempArr[i-startIndex];
 		}
     }
+
+    /**
+     * Lomuto Quick Sort
+     * This is a simplified version of the real quick sort (the Hoare Quick Sort) that takes the last element and puts all the elements less than it before it and the ones greater after it. Then it sorts the two arrays created by that partition.
+     * 
+     * @param arr is the array you are sorting
+     * @param startIndex is the lower bound of the range you are sorting
+     * @param endIndex is the upper bound of the range you are sorting
+     */
+    public static void lomutoQuickSort(int[] arr, int startIndex, int endIndex) 
+    {
+        if (startIndex < endIndex) { //If the start index is less than the end index, there is sorting to be done
+            int partitionIndex = lomutoPartition(arr,startIndex,endIndex); //Partition the data by putting the elements less than it before it and the ones greater than it after it. partitionIndex is now the index of the origional pivot
+            lomutoQuickSort(arr,startIndex,partitionIndex-1); //Sort the data before it
+            lomutoQuickSort(arr,partitionIndex+1,endIndex); //Sort the data after it
+        }
+    }
+
+    //Helper method to partition the Lomuto Quick Sort
+    private static int lomutoPartition(int[] arr, int startIndex, int endIndex) 
+    {
+        //We assume the pivot is the last element of the array, it makes no differance
+
+        int smallerIndex = startIndex-1; //Sets the index of the array less than it to one less than the start index
+
+        for (int i = startIndex; i <= endIndex-1; i++) { //For each element in question
+            if (arr[i] <= arr[endIndex]) { //If that element is less than the pivot
+                smallerIndex++; //Increment the smaller index
+                Helpers.swap(arr,smallerIndex,i); //Swap it with the element you are on
+            }
+        }
+
+        Helpers.swap(arr,endIndex,smallerIndex+1); //Swap the pivot with where you ended to put the pivot in the right spot
+        return smallerIndex+1; //Return the location of the pivot
+    }
+
+    /**
+     * Hoare Quick Sort
+     * This sort works in a more efficient manner than the Lomuto Quick Sort. But to make the partitions, rather than manually deciding for each one if it is greater than or less than, it finds two that are out of place and swaps them until it doesn't need to. Then it positions the pivot and does the same thing to the two sides. 
+     * 
+     * @param arr is the array you are sorting
+     * @param startIndex is the lower bound of the range you are sorting
+     * @param endIndex is the upper bound of the range you are sorting
+     */
+    public static void hoareQuickSort(int[] arr, int startIndex, int endIndex) 
+    {
+        if (startIndex < endIndex) { //If the start index is less than the end index, there is sorting to be done. 
+            int partitionIndex = hoarePartition(arr,startIndex,endIndex); //Partition the data and store the location of the pivot
+            hoareQuickSort(arr,startIndex,partitionIndex-1); //Sort everything before the partition
+            hoareQuickSort(arr,partitionIndex+1,endIndex); //Sort everything after the partition
+        }
+    }
+
+    //Helper method to partition the Hoare Quick Sort
+    private static int hoarePartition(int[] arr, int startIndex, int endIndex)
+    {
+        //Assumes the pivot is the first element, it makes no differance
+        int smallerIndex = startIndex-1; //Starts at the beginning
+        int biggerIndex = endIndex+1; //Starts at the end
+
+        while (true) { //Does this until the two index's go passed eachover
+
+            do { //This loop moves the smaller index to the first element that is bigger than the pivot, going from the start
+                smallerIndex++;
+            } while (arr[smallerIndex] < arr[startIndex]);
+
+            do { //This loop moves the bigger index to the first element that is less than the pivot, going from the end
+                biggerIndex--;
+            } while (arr[biggerIndex] > arr[startIndex]);
+
+            if (smallerIndex >= biggerIndex) { return biggerIndex;} //If they went passed eachover, return the bigger index, which is now the location of the pivot
+
+            Helpers.swap(arr, smallerIndex, biggerIndex); //Swap them so they are in the right spot relative to eachover
+
+        }
+    }
+
+    /**
+     * Bogo Sort
+     * This is a fairley inneficient sort that generates random permutations of the array until it finds one that is sorted
+     * 
+     * @param arr is the array you are sorting
+     * @param startIndex is the lower bound of the range you are sorting
+     * @param endIndex is the upper bound of the range you are sorting
+     */
+    public static void BogoSort(int[] arr, int startIndex, int endIndex) 
+    {
+        while (!Helpers.isSorted(arr,startIndex,endIndex)) {
+            System.out.println(Arrays.toString(arr));
+            Helpers.shuffle(arr, startIndex, endIndex);
+        }
+    }
+
+    //Sorts left: Heap, Iterative Heap, Bucket, Counting, Radix (LSD, MSD), Shell, Cocktail Shaker, Gnome, Bitonic
 
     //This class contains private local methods that might be of use.
     private static final class Helpers
@@ -172,5 +269,26 @@ public final class BBagSort
             arr[pos1] = arr[pos2]; //Replace the first value with the second
             arr[pos2] = temp; //Replace the second value with the temp (or first value)
         }
+
+        //Helper method to shuffle an array
+        private static void shuffle(int[] arr, int startIndex, int endIndex) 
+        {
+            Random rand = new Random(); //Make a new random maker
+
+            for (int i = startIndex; i <= endIndex; i++) { //For each element
+                int newIndex = startIndex + rand.nextInt(1+endIndex-startIndex); //Give it a random new index
+                swap(arr,i,newIndex); //Swap the element with its random new position
+            }
+        }
+
+        //Helper method to check if an array is sorted
+        private static boolean isSorted(int[] arr, int startIndex, int endIndex)
+        {
+            for (int i = startIndex; i < endIndex; i++) { //For each element
+                if (arr[i] > arr[i+1]) { return false; } //If it is bigger than the element after it, return false
+            }
+            return true; //If you get to the end, return true
+        }
+    
     }
 }
