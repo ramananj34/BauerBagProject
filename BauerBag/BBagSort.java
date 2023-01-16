@@ -252,7 +252,6 @@ public final class BBagSort
     public static void BogoSort(int[] arr, int startIndex, int endIndex) 
     {
         while (!Helpers.isSorted(arr,startIndex,endIndex)) {
-            System.out.println(Arrays.toString(arr));
             Helpers.shuffle(arr, startIndex, endIndex);
         }
     }
