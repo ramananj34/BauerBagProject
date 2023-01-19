@@ -3,7 +3,6 @@
 package BauerBag;
 
 import java.util.Random; //Necessary for shuffle method in Bogo Sort
-import java.util.Arrays;
 
 public final class BBagSort
 {
@@ -251,12 +250,30 @@ public final class BBagSort
      */
     public static void BogoSort(int[] arr, int startIndex, int endIndex) 
     {
-        while (!Helpers.isSorted(arr,startIndex,endIndex)) {
-            Helpers.shuffle(arr, startIndex, endIndex);
+        while (!Helpers.isSorted(arr,startIndex,endIndex)) { //While the array is not sorted
+            Helpers.shuffle(arr, startIndex, endIndex); //Get a random permutation of the array
         }
     }
 
-    //Sorts left: Heap, Iterative Heap, Bucket, Counting, Radix (LSD, MSD), Shell, Cocktail Shaker, Gnome, Bitonic
+    /**
+     * Heap Sort
+     * This sort works by turning the array into a heap, and using the properties of a heap to sort it. It is hard to explain without looking at the code. 
+     * 
+     * @param arr is the array you are sorting
+     * @param startIndex is the lower bound of the range you are sorting
+     * @param endIndex is the upper bound of the range you are sorting
+     */
+    public static void heapSort(int[] arr, int startIndex, int endIndex) {
+
+        Helpers.buildMaxHeap(arr,startIndex,endIndex); //First, turn the array into a heap
+
+        for (int i = endIndex; i > startIndex; i--) { //For each value
+            Helpers.swap(arr,startIndex,i); //Put the first node at the end because it is the biggest
+            Helpers.reMaxHeap(arr, i, startIndex); //Make a new heap without the node you just sorted
+        }
+    }
+
+    //Sorts left: Bucket, Counting, Radix (LSD, MSD), Shell, Cocktail Shaker, Gnome, Bitonic, introsort, Stable
 
     //This class contains private local methods that might be of use.
     private static final class Helpers
@@ -289,5 +306,36 @@ public final class BBagSort
             return true; //If you get to the end, return true
         }
     
+        //Helper method to turn a array into a Max Heap
+        private static void buildMaxHeap(int[] arr, int startIndex, int endIndex) 
+        {
+            int size = 1 + (endIndex-startIndex); //Gets the size of the array
+
+            for (int i = startIndex + (size / 2 - 1); i >= startIndex; i--) { //Sorting the first half of the array does it all, so for each value in the first half
+                Helpers.reMaxHeap(arr, size, i); //Call the heap maker below
+            }
+        }
+
+        //Helper method to turn an array into a Max Heap. We call this when we know that the heap is already pretty much a Max Heap because it is not efficient to call the method above. This one has assumptions to make it faster. 
+        private static void reMaxHeap(int[] arr, int size, int startIndex)
+        {
+            int largest = startIndex; //Assumes the first node is the biggest one
+            int l = 2 * startIndex + 1; //Gets the left child
+            int r = 2 * startIndex + 2; //Gets the right child
+
+            if (l < size && arr[l] > arr[largest]) {
+                largest = l; //If the left child is larger than the root, swap the index's
+            }
+            if (r < size && arr[r] > arr[largest]) {   
+                largest = r; //If the right child is larger than the root, swap the index's
+            }
+
+            if (largest != startIndex)  { //If we swapped the indexes
+                Helpers.swap(arr,startIndex,largest); //Swap the largets with the root node
+                Helpers.reMaxHeap(arr, size, largest); //Re-heap the branches
+            }
+        }
+
     }
+
 }
